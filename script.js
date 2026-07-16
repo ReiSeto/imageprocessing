@@ -9,9 +9,31 @@ const loading = document.getElementById('loading');
 
 let currentImage = null;
 
-uploadInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
+uploadInput.addEventListener('change', async (e) => {
+    let file = e.target.files[0];
     if (!file) return;
+
+    // Xử lý riêng cho file HEIC (iPhone)
+    if (file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic') {
+        originalPlaceholder.style.display = 'block';
+        originalPlaceholder.innerText = 'Đang giải mã ảnh HEIC, vui lòng đợi...';
+        originalPreview.style.display = 'none';
+        
+        try {
+            const convertedBlob = await heic2any({
+                blob: file,
+                toType: "image/jpeg",
+                quality: 0.95
+            });
+            file = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+            // Gán lại tên ảo để lúc lưu file tải về sẽ dùng tên này
+            file.name = e.target.files[0].name.replace(/\.[^/.]+$/, ".jpg");
+        } catch (error) {
+            alert('Lỗi giải mã file HEIC: ' + error);
+            originalPlaceholder.innerText = 'Chưa tải ảnh lên';
+            return;
+        }
+    }
 
     const reader = new FileReader();
     reader.onload = (event) => {
