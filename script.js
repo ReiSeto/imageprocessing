@@ -96,8 +96,8 @@ function processImage() {
     canvas.height = targetHeight;
     const ctx = canvas.getContext('2d');
 
-    // Áp dụng CSS filters (Brightness +25%, Contrast +15%, Saturate +30%)
-    ctx.filter = 'brightness(1.25) contrast(1.15) saturate(1.3)';
+    // Giảm Contrast (Độ rõ) xuống chỉ còn +2% (1.02) theo yêu cầu, giữ nguyên độ sáng và màu sắc một chút
+    ctx.filter = 'brightness(1.15) contrast(1.02) saturate(1.15)';
     
     // Vẽ ảnh lên canvas đồng thời crop và resize
     ctx.drawImage(currentImage, srcX, srcY, srcW, srcH, 0, 0, targetWidth, targetHeight);
@@ -127,11 +127,12 @@ function applySharpen(imageData, w, h) {
     const output = new ImageData(w, h);
     const dst = output.data;
 
-    // Kernel tăng cường độ nét mạnh (tương đương Sharpness +100%)
+    // Kernel tăng độ sắc nét cực nhẹ (khoảng 2-5%)
+    // Tổng các phần tử luôn = 1 để không làm thay đổi độ sáng
     const kernel = [
-         0, -1,  0,
-        -1,  5, -1,
-         0, -1,  0
+         0,    -0.05,     0,
+        -0.05,  1.20, -0.05,
+         0,    -0.05,     0
     ];
 
     for (let y = 0; y < h; y++) {
