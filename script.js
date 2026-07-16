@@ -8,8 +8,13 @@ const progressText = document.getElementById('progressText');
 let imageQueue = []; 
 
 uploadInput.addEventListener('change', async (e) => {
-    const files = Array.from(e.target.files);
+    let files = Array.from(e.target.files);
     if (files.length === 0) return;
+
+    if (files.length > 10) {
+        alert("Vui lòng chỉ chọn tối đa 10 ảnh mỗi lần xử lý để đảm bảo tốc độ tốt nhất!");
+        files = files.slice(0, 10);
+    }
 
     processBtn.disabled = true;
     downloadZipBtn.style.display = 'none';
